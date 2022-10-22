@@ -337,11 +337,15 @@ def save_config(path, data):
 
 
 # 程序入口
+sub_url =sys.argv[1]
+print("argk:",sub_url)
 if __name__ == '__main__':
     # 订阅地址 多个地址用;隔开
-    sub_url = input('请输入订阅地址(多个地址用;隔开):')
+    #sub_url = input('请输入订阅地址(多个地址用;隔开):')
+    #sub_url =sys.argv[0]
+    print(sub_url)
     # 输出路径
-    output_path = './output.yaml'
+    output_path = './temp.yaml'
     # 规则策略
     config_url = 'https://cdn.jsdelivr.net/gh/celetor/convert2clash@main/config.yaml'
     config_path = './config.yaml'
