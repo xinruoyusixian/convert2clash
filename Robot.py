@@ -6,6 +6,15 @@ import urllib.parse
 
 
 def log(msg):
+    pushApi="http://192.168.123.1:11234/512663a046b9"
+    pushUrl=pushApi+"/"+"Clash订阅更新："+"/"+msg
+    sysCMD='logger -t '+ '"'+msg+'"'
+    try:
+        print(sysCMD)
+        sys.system(sysCMD)
+        requests.get(pushUrl)
+    except:
+        pass
     time = datetime.datetime.now()
     print('[' + time.strftime('%Y.%m.%d-%H:%M:%S') + '] ' + msg)
 
@@ -304,11 +313,14 @@ def load_local_config(path):
 
 
 # 获取规则策略的配置文件
-def get_default_config(url, path):
+def get_default_config(url,path):
     try:
+        if url=='':
+            raise  Exception("即将使用本地默认default.yaml 配置")
         raw = requests.get(url, timeout=5000).content.decode('utf-8')
         template_config = yaml.load(raw, Loader=yaml.FullLoader)
-    except requests.exceptions.RequestException:
+    #except requests.exceptions.RequestException:
+    except:
         log('网络获取规则配置失败,加载本地配置文件')
         template_config = load_local_config(path)
     log('已获取规则配置文件')
@@ -343,17 +355,20 @@ if __name__ == '__main__':
     # 订阅地址 多个地址用;隔开
     #sub_url = input('请输入订阅地址(多个地址用;隔开):')
     #sub_url =sys.argv[0]
+    
     print(sub_url)
     # 输出路径
-    output_path = './temp.yaml'
+    output_path = './config.yaml'
     # 规则策略
-    config_url = 'https://cdn.jsdelivr.net/gh/celetor/convert2clash@main/config.yaml'
-    config_path = './config.yaml'
+    #config_url = 'https://cdn.jsdelivr.net/gh/celetor/convert2clash@main/config.yaml
+    config_url = ''
+    #默认配置文件 当网络不起作用的时候
+    default_config_path = './default.yaml'
 
     if sub_url is None or sub_url == '':
         sys.exit()
     node_list = get_proxies(sub_url)
-    default_config = get_default_config(config_url, config_path)
+    default_config = get_default_config(config_url, default_config_path)
     final_config = add_proxies_to_model(node_list, default_config)
     save_config(output_path, final_config)
-    print(f'文件已导出至 {config_path}')
+    print(f'文件已导出至 {output_path}')
